@@ -97,7 +97,7 @@ ftr2[(3,'a')] = {1}
 #ftr2[(3,'b')] = set()
 
 m = NFA({1,2,3},alf,ftr2,1,{1})
-#print (m.prihvata("aaaababba"))
+print (m.prihvata("aaaababba"))
 m.pretvori_u_DFA()
 
 n = NFA(s,alf,ftr,0,z)

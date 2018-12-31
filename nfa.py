@@ -1,4 +1,5 @@
 from itertools import combinations
+from dfa import DFA
 
 class NFA:
     def __init__(self, stanja, alfabet, fja_tranzicije, ps, zs):
@@ -33,11 +34,11 @@ class NFA:
         
     def prihvata(self, string):
         self.trenutna_stanja = self.provjeri_epsilon_grane(self.trenutna_stanja)
-        print (self.trenutna_stanja)
+        #print (self.trenutna_stanja)
         for slovo in string:
             self.promijeni_stanje(slovo)
             self.trenutna_stanja = self.provjeri_epsilon_grane(self.trenutna_stanja)
-            print (self.trenutna_stanja)
+            #print (self.trenutna_stanja)
             if len(self.trenutna_stanja) == 0:
                 return False
         if self.trenutna_stanja & self.zavrsna_stanja:
@@ -48,7 +49,7 @@ class NFA:
         stanja_dfa = set()
         for i in range(len(self.stanja)+1):
             stanja_dfa = stanja_dfa | set(combinations(self.stanja, i))
-        print (stanja_dfa)
+        #print (stanja_dfa)
         ftr_dfa = dict()
         for slovo in self.alfabet:
             for stanje in stanja_dfa:
@@ -57,17 +58,29 @@ class NFA:
                     if (stanje[i],slovo) in self.funkcija_tranzicije:
                         pom = pom | self.funkcija_tranzicije[(stanje[i],slovo)]
                         pom = self.provjeri_epsilon_grane(pom)
-                ftr_dfa[(stanje,slovo)] = pom
+                ftr_dfa[(stanje,slovo)] = tuple(pom)
         for stanje in stanja_dfa:
-            if set(stanje) not in ftr_dfa.values():
+            if stanje not in ftr_dfa.values():
                 for slovo in self.alfabet:
                     del ftr_dfa[(stanje,slovo)]
-        print (ftr_dfa)
-        
-        
+        #print (ftr_dfa)
+        pocetno_stanje_dfa = self.provjeri_epsilon_grane({self.pocetno_stanje})
+        pocetno_stanje_dfa = tuple(pocetno_stanje_dfa)
+        zavrsna_stanja_dfa = set()
+        for z_stanje_nfa in self.zavrsna_stanja:
+            for stanje_dfa in stanja_dfa:
+                for i in stanje_dfa:
+                    if  i == z_stanje_nfa:
+                        zavrsna_stanja_dfa.add(stanje_dfa)
+        #print (zavrsna_stanja_dfa)
+        return DFA(stanja_dfa, self.alfabet, ftr_dfa, pocetno_stanje_dfa, zavrsna_stanja_dfa)
+            
+"""primjeri"""   
+
 s = {0,1,2,3} #skup stanja
 alf = {"a","b"}
 z = {2} #zavrsna stanja
+"""
 ftr = dict() #tabela tranzicija
 ftr[(0,"a")] = {0}
 ftr[(0,"b")] = {1}
@@ -83,7 +96,7 @@ ftr[(2,"epsilon")] = {3}
 
 
 ftr[(3,"a")] = {3}
-ftr[(3,"b")] = {1}
+ftr[(3,"b")] = {1}"""
 
 ftr2 = dict()
 ftr2[(1,'b')] = {2}
@@ -98,17 +111,20 @@ ftr2[(3,'a')] = {1}
 
 m = NFA({1,2,3},alf,ftr2,1,{1})
 print (m.prihvata("aaaababba"))
-m.pretvori_u_DFA()
-
+d = m.pretvori_u_DFA()
+print (d.prihvata("aaaababba"))
+"""
 n = NFA(s,alf,ftr,0,z)
 #n.pretvori_u_DFA()
 print (n.prihvata("aaaababba"))
 
 test = dict()
 test[(1,'a')] = {2}
-test[(1,'b')] = set()
+#test[(1,'b')] = set()
 test[(2,'b')] = {2}
 test[(2,'epsilon')] = {1}
 testnfa = NFA({1,2},alf,test,1,{1})
-#print (testnfa.prihvata('ab'))
-
+print (testnfa.prihvata('ab'))
+a = {0,1, 2}
+print (tuple(a))
+"""

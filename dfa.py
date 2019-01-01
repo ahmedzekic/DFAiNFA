@@ -1,32 +1,41 @@
 
 
 class DFA:
-    def __init__(self, stanja, alfabet, fja_tranzicije, ps, zs):
-        self.stanja = stanja
-        self.alfabet = alfabet
-        self.funkcija_tranzicije = fja_tranzicije
-        if ps not in stanja:
-            raise NameError("pocetno stanje nije u skupu stanja")
-        self.pocetno_stanje = ps
-        if not zs <= stanja:
-            raise NameError("zavrsna stanja nisu u skupu stanja")
-        self.zavrsna_stanja = zs
-        self.trenutno_stanje = ps
+    def __init__(self, states, alphabet, transition_f, start_state, accept_states):
+        self.states = states
+        self.alphabet = alphabet
+        self.transition_function = transition_f
+        if start_state not in states:
+            raise NameError("start state is not in set of states")
+        self.start_state = start_state
+        if not accept_states <= states:
+            raise NameError("accept states are not in set of states")
+        self.accept_states = accept_states
+        self.current_state = start_state
         
-    def promijeni_stanje(self, slovo):
-        if slovo not in self.alfabet:
-            raise NameError("slovo nije u alfabetu")
-        self.trenutno_stanje = self.funkcija_tranzicije[(self.trenutno_stanje, slovo)]
+    def change_state(self, symbol):
+        if symbol not in self.alphabet:
+            raise NameError("symbol is not in alphabet")
+        self.current_state = self.transition_function[(self.current_state, symbol)]
         
-    def prihvata(self, string):
-        for slovo in string:
-            self.promijeni_stanje(slovo)
-        return self.trenutno_stanje in self.zavrsna_stanja
+    def accepts(self, string):
+        for symbol in string:
+            self.change_state(symbol)
+        return self.current_state in self.accept_states
         
-s = {0,1,2,3} #skup stanja
-alf = {"a","b"}
-z = {2} #zavrsna stanja
-ftr = dict() #tabela tranzicija
+    def out(self):
+        print ("Set of states: ", self.states)
+        print ("Alphabet: ",self.alphabet)
+        print ("Transition function: ", self.transition_function)
+        print ("Start state: ",self.start_state)
+        print ("Accept state: ",self.accept_states)
+        
+"""example"""
+        
+s = {0,1,2,3} #set of states
+alph = {"a","b"}
+a = {2} #accept states
+ftr = dict() #transition function
 ftr[(0,"a")] = 0
 ftr[(0,"b")] = 1
 
@@ -39,5 +48,7 @@ ftr[(2,"b")] = 0
 ftr[(3,"a")] = 3
 ftr[(3,"b")] = 1
 
-d = DFA(s,alf,ftr,0,z)
-print (d.prihvata("aaaabb"))
+d = DFA(s,alph,ftr,0,a)
+
+d.out()
+print (d.accepts("aaaabb"))

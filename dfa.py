@@ -13,6 +13,15 @@ class DFA:
         self.accept_states = accept_states
         self.current_state = start_state
         
+    def __str__(self):
+        out = (("Set of states: " + str(self.states)) + "\n" + ("Alphabet: " + str(self.alphabet)) + "\n"
+        + ("Transition function: " + str(self.transition_function)) + "\n" + ("Start state: " + str(self.start_state)) 
+        + "\n" + ("Accept states: " + str(self.accept_states)))
+        return out
+        
+    def __repr__(self):
+        return str(self)
+        
     def change_state(self, symbol):
         if symbol not in self.alphabet:
             raise NameError("symbol is not in alphabet")
@@ -21,15 +30,7 @@ class DFA:
     def accepts(self, string):
         for symbol in string:
             self.change_state(symbol)
-        return self.current_state in self.accept_states
-        
-    def out(self):
-        print ("Set of states: ", self.states)
-        print ("Alphabet: ",self.alphabet)
-        print ("Transition function: ", self.transition_function)
-        print ("Start state: ",self.start_state)
-        print ("Accept state: ",self.accept_states)
-        
+        return self.current_state in self.accept_states      
 """example"""
         
 s = {0,1,2,3} #set of states
@@ -49,6 +50,5 @@ ftr[(3,"a")] = 3
 ftr[(3,"b")] = 1
 
 d = DFA(s,alph,ftr,0,a)
-
-d.out()
+print (d)
 print (d.accepts("aaaabb"))
